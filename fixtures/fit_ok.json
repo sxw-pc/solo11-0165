@@ -1,0 +1,1 @@
+{"requests":[{"event_id":"request-1","request_id":"req-1","person":"borrower-a","model":"walker-m","size":170,"weight":70,"need_from":"2026-11-02","need_to":"2026-11-10"}],"opinions":[{"event_id":"opinion-1","request_id":"req-1","version":1,"model":"walker-m","min_size":150,"max_size":190,"max_weight":100,"therapist":"therapist-a"}]}

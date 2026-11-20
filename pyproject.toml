@@ -1,0 +1,10 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "assistlease"
+version = "0.1.0"
+requires-python = ">=3.11"
+description = "Offline assistive device fit, hygiene, and lease ledger"
+[tool.setuptools]
+packages = ["assistlease"]
