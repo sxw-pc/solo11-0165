@@ -21,3 +21,5 @@ python -m assistlease report --db state.sqlite
 对应 `fit_bad.json` 会将承重意见变为不合格，`asset_bad.json` 将检修放行改为故障，`rental_bad.json` 使逾期和损坏合计超过已签押金。原始文件留在 `file_journal`，每事件保留 SHA；重放幂等，异内容事件 ID 拒绝覆盖。`audit` 在空库重放原始文件并比较决策。报告区分租借批准、辅具可交付与押金退款。
 
 首版的治疗师、检修员和签收身份只做离线证据标签；不连接真实医疗、库存或支付系统。
+
+本隔离增强副本增加 `gait-import`，只采集一段助行器握把力数列并报告算术均值，`fixtures/gait_ok.json` 可在原有三个入口后导入。现阶段不划分步相、不关联左右受力或步态与个体扶持设置。
