@@ -16,6 +16,9 @@ CREATE TABLE IF NOT EXISTS delivery(event_id TEXT PRIMARY KEY,request_id TEXT NO
 CREATE TABLE IF NOT EXISTS return_receipt(event_id TEXT PRIMARY KEY,request_id TEXT NOT NULL,unit TEXT NOT NULL,at TEXT NOT NULL,person TEXT NOT NULL,center TEXT NOT NULL,condition TEXT NOT NULL,damage_cost INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS rental_decision(request_id TEXT PRIMARY KEY,state TEXT NOT NULL,reason TEXT NOT NULL,started_at TEXT,overdue_fee INTEGER NOT NULL,damage_fee INTEGER NOT NULL,refund INTEGER NOT NULL,frozen INTEGER NOT NULL,version INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS decision_history(id INTEGER PRIMARY KEY,subsystem TEXT NOT NULL,object_id TEXT NOT NULL,version INTEGER NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL,at TEXT DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE IF NOT EXISTS lab_sample(event_id TEXT PRIMARY KEY,process_id TEXT NOT NULL,surface TEXT NOT NULL,at TEXT NOT NULL,role TEXT NOT NULL,cfu INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS lab_decision(process_id TEXT PRIMARY KEY,state TEXT NOT NULL,reason TEXT NOT NULL,peak_cfu INTEGER NOT NULL,version INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS process_claim(process_id TEXT PRIMARY KEY,state TEXT NOT NULL,reason TEXT NOT NULL,scope TEXT NOT NULL,version INTEGER NOT NULL);
 """
 def connect(path):
     db=sqlite3.connect(path);db.row_factory=sqlite3.Row;db.executescript(SCHEMA);return db
