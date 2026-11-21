@@ -3,7 +3,7 @@ def report(db):
     requests=[]
     for row in db.execute('SELECT DISTINCT request_id FROM fit_request ORDER BY request_id'):
         request_id=row['request_id'];item={'request_id':request_id}
-        for table,key in [('fit_decision','fit'),('rental_decision','rental')]:
+        for table,key in [('fit_decision','fit'),('rental_decision','rental'),('mobility_outcome','mobility')]:
             found=db.execute(f'SELECT * FROM {table} WHERE request_id=?',(request_id,)).fetchone()
             item[key]=dict(found) if found else None
         item['history']=[dict(r) for r in db.execute('SELECT subsystem,version,state,reason FROM decision_history WHERE object_id=? ORDER BY id',(request_id,))]
