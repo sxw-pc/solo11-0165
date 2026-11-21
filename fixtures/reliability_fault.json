@@ -1,1 +1,1 @@
-{"inspections":[{"event_id":"inspect-failure-12","unit":"unit-1","at":"2026-11-12","valid_to":"2026-11-13","state":"fault","inspector":"technician-r"},{"event_id":"inspect-failure-13","unit":"unit-1","at":"2026-11-13","valid_to":"2026-11-14","state":"fault","inspector":"technician-s"}]}
+{"inspections":[{"event_id":"inspect-failure-07","unit":"unit-1","at":"2026-11-07","valid_to":"2026-11-08","state":"fault","inspector":"technician-r"},{"event_id":"inspect-failure-09","unit":"unit-1","at":"2026-11-09","valid_to":"2026-11-10","state":"fault","inspector":"technician-s"}]}

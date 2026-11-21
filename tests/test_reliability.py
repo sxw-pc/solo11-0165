@@ -22,6 +22,8 @@ class ReliabilityTest(unittest.TestCase):
                 row = report(db)['reliability'][0]
                 self.assertEqual((row['model'], row['units'], row['loan_days'], row['faults']),
                                  ('walker-m', 1, 9, 2))
+                run_import(db, 'fit-import', (ROOT / 'fixtures' / 'fit_bad.json').read_bytes())
+                self.assertEqual(report(db)['reliability'][0]['loan_days'], 0)
             finally:
                 db.close()
 
