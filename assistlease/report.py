@@ -9,6 +9,7 @@ def report(db):
         item['history']=[dict(r) for r in db.execute('SELECT subsystem,version,state,reason FROM decision_history WHERE object_id=? ORDER BY id',(request_id,))]
         requests.append(item)
     assets=[dict(r) for r in db.execute('SELECT * FROM asset_decision ORDER BY unit')]
-    return {'requests':requests,'assets':assets,'source_files':[dict(r) for r in db.execute('SELECT kind,sha FROM file_journal ORDER BY id')],
+    from .reliability import report as reliability_report
+    return {'requests':requests,'assets':assets,'reliability':reliability_report(db),'source_files':[dict(r) for r in db.execute('SELECT kind,sha FROM file_journal ORDER BY id')],
             'evidence_count':db.execute('SELECT COUNT(*) FROM evidence').fetchone()[0]}
 def dumps(db):return json.dumps(report(db),ensure_ascii=False,indent=2)
