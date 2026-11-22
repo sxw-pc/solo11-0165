@@ -28,6 +28,8 @@ def decide(db,unit):
     result=update(db,'asset_decision','unit',unit,state=state,reason=reason,request_id=request_id)
     from .rental import decide as rental_decide
     for reservation in reservations:rental_decide(db,reservation['request_id'])
+    from .transfer import reconcile_all as transfer_reconcile
+    transfer_reconcile(db)
     return result
 
 def reconcile_all(db):

@@ -1,0 +1,1 @@
+{"revokes":[{"event_id":"revoke-2","transfer_id":"transfer-2","at":"2026-11-15T16:00","authority":"coordinator-a","reason":"reroute to center-c while missing basket is investigated"}]}

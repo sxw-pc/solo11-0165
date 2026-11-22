@@ -15,6 +15,12 @@ CREATE TABLE IF NOT EXISTS rental_term(event_id TEXT PRIMARY KEY,request_id TEXT
 CREATE TABLE IF NOT EXISTS delivery(event_id TEXT PRIMARY KEY,request_id TEXT NOT NULL,unit TEXT NOT NULL,at TEXT NOT NULL,person TEXT NOT NULL,center TEXT NOT NULL,condition TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS return_receipt(event_id TEXT PRIMARY KEY,request_id TEXT NOT NULL,unit TEXT NOT NULL,at TEXT NOT NULL,person TEXT NOT NULL,center TEXT NOT NULL,condition TEXT NOT NULL,damage_cost INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS rental_decision(request_id TEXT PRIMARY KEY,state TEXT NOT NULL,reason TEXT NOT NULL,started_at TEXT,overdue_fee INTEGER NOT NULL,damage_fee INTEGER NOT NULL,refund INTEGER NOT NULL,frozen INTEGER NOT NULL,version INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS transfer_request(event_id TEXT PRIMARY KEY,transfer_id TEXT NOT NULL,unit TEXT NOT NULL,from_center TEXT NOT NULL,to_center TEXT NOT NULL,request_id TEXT NOT NULL,created_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS transfer_release(event_id TEXT PRIMARY KEY,transfer_id TEXT NOT NULL,center TEXT NOT NULL,officer TEXT NOT NULL,at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS carrier_accept(event_id TEXT PRIMARY KEY,transfer_id TEXT NOT NULL,carrier TEXT NOT NULL,at TEXT NOT NULL,sealed INTEGER NOT NULL,manifest TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS arrival_check(event_id TEXT PRIMARY KEY,transfer_id TEXT NOT NULL,checker TEXT NOT NULL,at TEXT NOT NULL,model TEXT NOT NULL,serial TEXT NOT NULL,accessories TEXT NOT NULL,seal_intact INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS transfer_revoke(event_id TEXT PRIMARY KEY,transfer_id TEXT NOT NULL,at TEXT NOT NULL,authority TEXT NOT NULL,reason TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS transfer_decision(transfer_id TEXT PRIMARY KEY,state TEXT NOT NULL,reason TEXT NOT NULL,route TEXT,release_center TEXT,custody TEXT,deliverable_at TEXT,version INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS decision_history(id INTEGER PRIMARY KEY,subsystem TEXT NOT NULL,object_id TEXT NOT NULL,version INTEGER NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL,at TEXT DEFAULT CURRENT_TIMESTAMP);
 """
 def connect(path):
