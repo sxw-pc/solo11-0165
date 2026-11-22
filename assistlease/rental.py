@@ -14,7 +14,7 @@ def decide(db,request_id):
         term=terms[0]
         asset=db.execute('SELECT * FROM asset_decision WHERE unit=?',(term['unit'],)).fetchone()
         request=db.execute('SELECT * FROM fit_request WHERE request_id=? ORDER BY event_id DESC LIMIT 1',(request_id,)).fetchone()
-        if not asset or asset['state'] not in ('reserved','returned_quarantine') or asset['request_id']!=request_id:
+        if not asset or (asset['state'] not in ('reserved','returned_quarantine','retired')) or (asset['state']!='retired' and asset['request_id']!=request_id):
             state,reason='blocked','unit not reserved with valid inspection and sanitation'
         elif term['signed_by']!=request['person']:
             state,reason='blocked','borrower has not signed deposit and due terms'

@@ -2,9 +2,14 @@ from .source import record
 from .store import update
 
 def decide(db,unit):
+    from .retirement import decide_unit
+    decide_unit(db,unit)
     asset=db.execute('SELECT * FROM asset_unit WHERE unit=? ORDER BY event_id DESC LIMIT 1',(unit,)).fetchone()
     reservations=db.execute('SELECT * FROM reservation WHERE unit=? ORDER BY from_at,event_id',(unit,)).fetchall()
-    if not asset:state,reason,request_id='pending','asset master record missing',None
+    retirement=db.execute('SELECT state FROM retirement_decision WHERE unit=?',(unit,)).fetchone()
+    if retirement and retirement['state']!='pending_review':
+        state,reason,request_id='retired','approved retirement removes unit from reservation pool',None
+    elif not asset:state,reason,request_id='pending','asset master record missing',None
     elif not reservations:state,reason,request_id='unreserved','unit has no active lease request',None
     else:
         chosen=None
