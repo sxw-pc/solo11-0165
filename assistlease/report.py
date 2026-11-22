@@ -10,6 +10,8 @@ def report(db):
         requests.append(item)
     assets=[dict(r) for r in db.execute('SELECT * FROM asset_decision ORDER BY unit')]
     return {'requests':requests,'assets':assets,'gait_trials':[dict(r) for r in db.execute('SELECT * FROM gait_trial ORDER BY event_id')],
+            'gait_analyses':[dict(r) for r in db.execute('SELECT * FROM gait_session_analysis ORDER BY session_id')],
+            'gait_routes':[dict(r) for r in db.execute('SELECT * FROM gait_route_decision ORDER BY priority,route_id')],
             'source_files':[dict(r) for r in db.execute('SELECT kind,sha FROM file_journal ORDER BY id')],
             'evidence_count':db.execute('SELECT COUNT(*) FROM evidence').fetchone()[0]}
 def dumps(db):return json.dumps(report(db),ensure_ascii=False,indent=2)

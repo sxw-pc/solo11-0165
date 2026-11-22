@@ -2,6 +2,28 @@ import json
 
 from .source import record
 
+PHASE_DOUBLE = 'double_support'
+PHASE_LEFT = 'left_support'
+PHASE_RIGHT = 'right_support'
+PHASE_SWING = 'swing'
+
+
+def classify_support(sole_left, sole_right):
+    """Map sole contact sensors to the phase of the body.
+
+    A left-support packet means the left leg carries weight (left sole down)
+    while the right leg swings.  Both soles down is double support; neither
+    sole down is the swing/airborne segment.  No other combination exists.
+    """
+    pair = (int(sole_left), int(sole_right))
+    if pair == (1, 1):
+        return PHASE_DOUBLE
+    if pair == (1, 0):
+        return PHASE_LEFT
+    if pair == (0, 1):
+        return PHASE_RIGHT
+    return PHASE_SWING
+
 
 def import_data(db, data):
     results = []

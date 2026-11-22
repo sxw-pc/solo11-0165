@@ -1,13 +1,14 @@
 import argparse
 import json
 from pathlib import Path
-from . import fit,asset,rental,gait
+from . import fit,asset,rental,gait,gait_support
 from .source import file_record
 from .store import connect
 from .report import report,dumps
 def run_import(db,command,raw):
     data=json.loads(raw);file_record(db,command,raw)
-    return {'fit-import':fit.import_data,'asset-import':asset.import_data,'rental-import':rental.import_data,'gait-import':gait.import_data}[command](db,data)
+    return {'fit-import':fit.import_data,'asset-import':asset.import_data,'rental-import':rental.import_data,
+            'gait-import':gait.import_data,'gait-support-import':gait_support.import_data}[command](db,data)
 def audit(db):
     restored=connect(':memory:')
     try:
@@ -17,7 +18,7 @@ def audit(db):
         return {'status':'matched','source_files':len(rows)}
     finally:restored.close()
 def main(argv=None):
-    p=argparse.ArgumentParser(prog='assistlease');p.add_argument('command',choices=['fit-import','asset-import','rental-import','gait-import','report','audit','demo'])
+    p=argparse.ArgumentParser(prog='assistlease');p.add_argument('command',choices=['fit-import','asset-import','rental-import','gait-import','gait-support-import','report','audit','demo'])
     p.add_argument('--db',required=True);p.add_argument('--file');a=p.parse_args(argv);db=connect(a.db)
     try:
         if a.command=='report':print(dumps(db));return
