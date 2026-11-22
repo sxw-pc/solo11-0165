@@ -7,12 +7,17 @@ import unittest
 from pathlib import Path
 import assistlease
 from assistlease.__main__ import run_import,audit
+from assistlease import credential_crawl
 from assistlease.store import connect
 from assistlease.report import report
 ROOT=Path(__file__).resolve().parents[1]
 FIX=ROOT/'fixtures'
 def fixture(name):return json.loads((FIX/name).read_text(encoding='utf8'))
 def feed(db,kind,data):return run_import(db,kind,json.dumps(data,ensure_ascii=False).encode())
+def credentials(db,route='device'):
+    run_import(db,'credential-crawl',credential_crawl.bundle_bytes(FIX/'credential_site'))
+    feed(db,'credential-import',fixture('credential_roster.json'))
+    if route:feed(db,'credential-import',fixture(f'credential_attest_{route}.json'))
 
 class LeaseCase(unittest.TestCase):
     def setUp(self):
@@ -22,11 +27,13 @@ class LeaseCase(unittest.TestCase):
     def state(self,table,key='request_id',value='req-1'):
         return dict(self.db.execute(f'SELECT * FROM {table} WHERE {key}=?',(value,)).fetchone())
     def normal(self):
+        credentials(self.db)
         feed(self.db,'fit-import',fixture('fit_ok.json'))
         feed(self.db,'asset-import',fixture('asset_ok.json'))
         feed(self.db,'rental-import',fixture('rental_ok.json'))
         return report(self.db)
     def setup_asset(self):
+        credentials(self.db)
         feed(self.db,'fit-import',fixture('fit_ok.json'));feed(self.db,'asset-import',fixture('asset_ok.json'))
     def test_normal_fit_asset_lease_and_quarantine(self):
         result=self.normal()
@@ -36,6 +43,7 @@ class LeaseCase(unittest.TestCase):
         self.assertEqual(result['assets'][0]['state'],'returned_quarantine')
         self.assertEqual(audit(self.db)['status'],'matched')
     def test_size_outside_opinion_rejects(self):
+        credentials(self.db)
         data=fixture('fit_ok.json');data['requests'][0]['size']=200
         feed(self.db,'fit-import',data)
         self.assertEqual(self.state('fit_decision')['state'],'rejected')
@@ -45,6 +53,7 @@ class LeaseCase(unittest.TestCase):
         self.assertEqual(self.state('asset_decision','unit','unit-1')['state'],'blocked')
         self.assertEqual(self.state('rental_decision')['state'],'blocked')
     def test_parallel_opinion_conflict(self):
+        credentials(self.db)
         feed(self.db,'fit-import',fixture('fit_ok.json'))
         a=fixture('fit_bad.json')['opinions'][0];feed(self.db,'fit-import',{'opinions':[a]})
         b=copy.deepcopy(a);b['event_id']='opinion-3';b['max_weight']=80
@@ -55,6 +64,7 @@ class LeaseCase(unittest.TestCase):
         self.assertEqual(self.state('asset_decision','unit','unit-1')['state'],'blocked')
     def test_expired_sanitation_quarantines(self):
         data=fixture('asset_ok.json');data['sanitations'][0]['valid_to']='2026-11-01'
+        credentials(self.db)
         feed(self.db,'fit-import',fixture('fit_ok.json'));feed(self.db,'asset-import',data)
         self.assertEqual(self.state('asset_decision','unit','unit-1')['state'],'quarantine')
     def test_overlapping_request_cannot_take_same_unit(self):

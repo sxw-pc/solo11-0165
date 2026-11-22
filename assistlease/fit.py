@@ -3,9 +3,21 @@ from .store import update
 
 def decide(db,request_id):
     req=db.execute('SELECT * FROM fit_request WHERE request_id=? ORDER BY event_id DESC LIMIT 1',(request_id,)).fetchone()
-    opinions=db.execute('SELECT * FROM fit_opinion WHERE request_id=? ORDER BY version DESC,event_id',(request_id,)).fetchall()
+    rows=db.execute('SELECT o.*,a.state AS attr_state,a.credential_state AS cred_state FROM fit_opinion o '
+                    'LEFT JOIN opinion_attribution a ON a.opinion_event_id=o.event_id WHERE o.request_id=? '
+                    'ORDER BY o.version DESC,o.event_id',(request_id,)).fetchall()
+    # Only opinions attributed to a real signer with a credential valid at
+    # signing time are consumed; name labels alone never qualify an opinion.
+    opinions=[r for r in rows if r['attr_state']=='attributed' and r['cred_state']=='valid']
     if not req:state,reason,model='pending','fit request missing',None
-    elif not opinions:state,reason,model='pending','therapist fit opinion missing',None
+    elif not rows:state,reason,model='pending','therapist fit opinion missing',None
+    elif not opinions:
+        if any(r['attr_state'] in ('conflict','quarantined','invalid') for r in rows):
+            state,reason,model='blocked','fit opinion signer attribution unresolved; witnessed correction required',None
+        elif any(r['attr_state']=='attributed' for r in rows):
+            state,reason,model='blocked','fit opinion signer credential invalid; independent re-evaluation required',None
+        else:
+            state,reason,model='pending','therapist fit opinion missing verifiable attribution',None
     else:
         op=opinions[0];top=[r for r in opinions if r['version']==op['version']]
         if len({(r['model'],r['min_size'],r['max_size'],r['max_weight']) for r in top})>1:
@@ -36,4 +48,6 @@ def import_data(db,data):
                 db.execute('INSERT INTO fit_opinion VALUES(?,?,?,?,?,?,?,?)',
                            (row['event_id'],row['request_id'],row['version'],row['model'],row['min_size'],row['max_size'],row['max_weight'],row['therapist']))
             touched.add(row['request_id'])
-        return [decide(db,r) for r in sorted(touched)]
+        from .credential import recompute
+        recompute(db)
+        return [dict(db.execute('SELECT * FROM fit_decision WHERE request_id=?',(r,)).fetchone()) for r in sorted(touched)]

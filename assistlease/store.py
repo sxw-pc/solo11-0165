@@ -16,6 +16,14 @@ CREATE TABLE IF NOT EXISTS delivery(event_id TEXT PRIMARY KEY,request_id TEXT NO
 CREATE TABLE IF NOT EXISTS return_receipt(event_id TEXT PRIMARY KEY,request_id TEXT NOT NULL,unit TEXT NOT NULL,at TEXT NOT NULL,person TEXT NOT NULL,center TEXT NOT NULL,condition TEXT NOT NULL,damage_cost INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS rental_decision(request_id TEXT PRIMARY KEY,state TEXT NOT NULL,reason TEXT NOT NULL,started_at TEXT,overdue_fee INTEGER NOT NULL,damage_fee INTEGER NOT NULL,refund INTEGER NOT NULL,frozen INTEGER NOT NULL,version INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS decision_history(id INTEGER PRIMARY KEY,subsystem TEXT NOT NULL,object_id TEXT NOT NULL,version INTEGER NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL,at TEXT DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE IF NOT EXISTS crawl_page(page_id TEXT PRIMARY KEY,source_url TEXT NOT NULL,cursor TEXT NOT NULL,crawled_at TEXT NOT NULL,page_version INTEGER NOT NULL,sha TEXT NOT NULL,raw BLOB NOT NULL);
+CREATE TABLE IF NOT EXISTS credential_notice(event_id TEXT PRIMARY KEY,person_id TEXT NOT NULL,name TEXT NOT NULL,cert_no TEXT NOT NULL,scope TEXT NOT NULL,models TEXT NOT NULL,effective_from TEXT NOT NULL,revoked_at TEXT,page_version INTEGER NOT NULL,page_id TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS notice_page(event_id TEXT NOT NULL,page_id TEXT NOT NULL,PRIMARY KEY(event_id,page_id));
+CREATE TABLE IF NOT EXISTS duty_roster(event_id TEXT PRIMARY KEY,opinion_event_id TEXT NOT NULL,signer_label TEXT NOT NULL,signer_person_id TEXT,signed_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS attestation(event_id TEXT PRIMARY KEY,route TEXT NOT NULL,opinion_event_id TEXT NOT NULL,person_id TEXT NOT NULL,witnesses TEXT NOT NULL,at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS correction(event_id TEXT PRIMARY KEY,cert_no TEXT NOT NULL,person_id TEXT NOT NULL,page_version INTEGER NOT NULL,signed_by TEXT NOT NULL,at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS credential_state(binding TEXT PRIMARY KEY,cert_no TEXT NOT NULL,person_id TEXT NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL,notice_event_id TEXT,page_version INTEGER,version INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS opinion_attribution(opinion_event_id TEXT PRIMARY KEY,request_id TEXT NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL,person_id TEXT,cert_no TEXT,route TEXT,credential_state TEXT,signed_at TEXT,notice_event_id TEXT,version INTEGER NOT NULL);
 """
 def connect(path):
     db=sqlite3.connect(path);db.row_factory=sqlite3.Row;db.executescript(SCHEMA);return db
