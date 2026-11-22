@@ -21,6 +21,8 @@ def decide(db,request_id):
     result=update(db,'fit_decision','request_id',request_id,state=state,reason=reason,model=model)
     from .asset import reconcile_all
     reconcile_all(db)
+    from .outcome import redecide_known
+    redecide_known(db)
     return result
 
 def import_data(db,data):

@@ -25,6 +25,14 @@ def main(argv=None):
         if a.command=='demo':
             root=Path(__file__).parent.parent/'fixtures'
             for command,name in [('fit-import','fit_ok.json'),('asset-import','asset_ok.json'),('rental-import','rental_ok.json')]:run_import(db,command,(root/name).read_bytes())
+            outcome=json.loads((root/'outcome_anchor.json').read_text(encoding='utf8'))
+            outcome['protocols']=[{
+                'event_id':'protocol-demo-self-report','request_id':'req-1',
+                'endpoint_type':'self_report','form_version':'v1','meaningful_delta':10,
+                'measure_from':'2026-10-25','measure_to':'2026-11-15',
+                'witness_required':'evaluator-a','test_minutes':None,
+                'signed_by':'borrower-a','signed_at':'2026-11-01'}]
+            run_import(db,'outcome-import',json.dumps(outcome,ensure_ascii=False).encode())
             print(dumps(db));return
         if not a.file:p.error('--file required')
         print(json.dumps(run_import(db,a.command,Path(a.file).read_bytes()),ensure_ascii=False,indent=2))

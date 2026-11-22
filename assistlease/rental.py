@@ -43,8 +43,11 @@ def decide(db,request_id):
                     else:
                         state,reason='closed','return verified, deductions itemized and deposit released'
                         refund=term['deposit']-charge
-    return update(db,'rental_decision','request_id',request_id,state=state,reason=reason,started_at=started_at,
+    result=update(db,'rental_decision','request_id',request_id,state=state,reason=reason,started_at=started_at,
                   overdue_fee=overdue,damage_fee=damage,refund=refund,frozen=frozen)
+    from .outcome import redecide_known
+    redecide_known(db)
+    return result
 
 def import_data(db,data):
     touched=set()

@@ -1,0 +1,86 @@
+{
+  "protocols": [
+    {"event_id":"protocol-1-self","request_id":"req-1","endpoint_type":"self_report","form_version":"v1","meaningful_delta":10,"measure_from":"2026-10-25","measure_to":"2026-11-15","witness_required":"evaluator-a","test_minutes":null,"signed_by":"borrower-a","signed_at":"2026-11-01"},
+    {"event_id":"protocol-1-walk","request_id":"req-1","endpoint_type":"walk_distance","form_version":"6mwd","meaningful_delta":30,"measure_from":"2026-10-25","measure_to":"2026-11-15","witness_required":"therapist-a","test_minutes":6,"signed_by":"borrower-a","signed_at":"2026-11-01"},
+
+    {"event_id":"protocol-anchor-withdrawn","request_id":"req-anchor-withdrawn","endpoint_type":"self_report","form_version":"v1","meaningful_delta":10,"measure_from":"2026-10-25","measure_to":"2026-11-15","witness_required":"evaluator-a","test_minutes":null,"signed_by":"borrower-aw","signed_at":"2026-11-01"},
+
+    {"event_id":"protocol-walk-mismatch","request_id":"req-walk-mismatch","endpoint_type":"walk_distance","form_version":"6mwd","meaningful_delta":30,"measure_from":"2026-10-25","measure_to":"2026-11-15","witness_required":"therapist-a","test_minutes":6,"signed_by":"borrower-wm","signed_at":"2026-11-01"},
+
+    {"event_id":"protocol-self-boundary","request_id":"req-self-boundary","endpoint_type":"self_report","form_version":"v1","meaningful_delta":10,"measure_from":"2026-10-25","measure_to":"2026-11-15","witness_required":"evaluator-a","test_minutes":null,"signed_by":"borrower-sb","signed_at":"2026-11-01"},
+    {"event_id":"protocol-self-below","request_id":"req-self-below","endpoint_type":"self_report","form_version":"v1","meaningful_delta":10,"measure_from":"2026-10-25","measure_to":"2026-11-15","witness_required":"evaluator-a","test_minutes":null,"signed_by":"borrower-sl","signed_at":"2026-11-01"},
+    {"event_id":"protocol-anchor-straddle","request_id":"req-anchor-straddle","endpoint_type":"self_report","form_version":"v1","meaningful_delta":10,"measure_from":"2026-10-25","measure_to":"2026-11-15","witness_required":"evaluator-a","test_minutes":null,"signed_by":"borrower-as","signed_at":"2026-11-01"},
+
+    {"event_id":"protocol-walk-boundary","request_id":"req-walk-boundary","endpoint_type":"walk_distance","form_version":"6mwd","meaningful_delta":30,"measure_from":"2026-10-25","measure_to":"2026-11-15","witness_required":"therapist-a","test_minutes":6,"signed_by":"borrower-wb","signed_at":"2026-11-01"},
+    {"event_id":"protocol-walk-condition","request_id":"req-walk-condition","endpoint_type":"walk_distance","form_version":"6mwd","meaningful_delta":30,"measure_from":"2026-10-25","measure_to":"2026-11-15","witness_required":"therapist-a","test_minutes":6,"signed_by":"borrower-wc","signed_at":"2026-11-01"},
+    {"event_id":"protocol-no-anchor","request_id":"req-no-anchor","endpoint_type":"self_report","form_version":"v1","meaningful_delta":10,"measure_from":"2026-10-25","measure_to":"2026-11-15","witness_required":"evaluator-a","test_minutes":null,"signed_by":"borrower-na","signed_at":"2026-11-01"},
+
+    {"event_id":"protocol-conflict-a","request_id":"req-conflict","endpoint_type":"self_report","form_version":"v1","meaningful_delta":10,"measure_from":"2026-10-25","measure_to":"2026-11-15","witness_required":"evaluator-a","test_minutes":null,"signed_by":"borrower-cf","signed_at":"2026-11-01"},
+    {"event_id":"protocol-conflict-b","request_id":"req-conflict","endpoint_type":"walk_distance","form_version":"6mwd","meaningful_delta":30,"measure_from":"2026-10-25","measure_to":"2026-11-15","witness_required":"therapist-a","test_minutes":6,"signed_by":"borrower-cf","signed_at":"2026-11-01"},
+
+    {"event_id":"protocol-late","request_id":"req-late","endpoint_type":"self_report","form_version":"v1","meaningful_delta":10,"measure_from":"2026-10-25","measure_to":"2026-11-15","witness_required":"evaluator-a","test_minutes":null,"signed_by":"borrower-lt","signed_at":"2026-11-05"},
+    {"event_id":"protocol-switch-self","request_id":"req-switch","endpoint_type":"self_report","form_version":"v1","meaningful_delta":10,"measure_from":"2026-10-25","measure_to":"2026-11-15","witness_required":"evaluator-a","test_minutes":null,"signed_by":"borrower-sw","signed_at":"2026-11-01"},
+    {"event_id":"protocol-switch-walk-late","request_id":"req-switch","endpoint_type":"walk_distance","form_version":"6mwd","meaningful_delta":30,"measure_from":"2026-10-25","measure_to":"2026-11-15","witness_required":"therapist-a","test_minutes":6,"signed_by":"borrower-sw","signed_at":"2026-11-06"},
+
+    {"event_id":"protocol-scale-mismatch","request_id":"req-scale-mismatch","endpoint_type":"self_report","form_version":"v2","meaningful_delta":10,"measure_from":"2026-10-25","measure_to":"2026-11-15","witness_required":"evaluator-a","test_minutes":null,"signed_by":"borrower-sm","signed_at":"2026-11-01"},
+    {"event_id":"protocol-window","request_id":"req-window","endpoint_type":"self_report","form_version":"v1","meaningful_delta":10,"measure_from":"2026-10-25","measure_to":"2026-11-05","witness_required":"evaluator-a","test_minutes":null,"signed_by":"borrower-wn","signed_at":"2026-11-01"}
+  ],
+  "forms": [
+    {"event_id":"p-aw-before","request_id":"req-anchor-withdrawn","respondent":"borrower-aw","stage":"before","form_version":"v1","score":40,"at":"2026-11-01"},
+    {"event_id":"p-aw-after","request_id":"req-anchor-withdrawn","respondent":"borrower-aw","stage":"after","form_version":"v1","score":70,"at":"2026-11-11"},
+
+    {"event_id":"p-sb-before","request_id":"req-self-boundary","respondent":"borrower-sb","stage":"before","form_version":"v1","score":40,"at":"2026-11-01"},
+    {"event_id":"p-sb-after","request_id":"req-self-boundary","respondent":"borrower-sb","stage":"after","form_version":"v1","score":50,"at":"2026-11-11"},
+    {"event_id":"p-sl-before","request_id":"req-self-below","respondent":"borrower-sl","stage":"before","form_version":"v1","score":40,"at":"2026-11-01"},
+    {"event_id":"p-sl-after","request_id":"req-self-below","respondent":"borrower-sl","stage":"after","form_version":"v1","score":49,"at":"2026-11-11"},
+    {"event_id":"p-as-before","request_id":"req-anchor-straddle","respondent":"borrower-as","stage":"before","form_version":"v1","score":40,"at":"2026-11-01"},
+    {"event_id":"p-as-after","request_id":"req-anchor-straddle","respondent":"borrower-as","stage":"after","form_version":"v1","score":70,"at":"2026-11-11"},
+
+    {"event_id":"p-na-before","request_id":"req-no-anchor","respondent":"borrower-na","stage":"before","form_version":"v1","score":40,"at":"2026-11-01"},
+    {"event_id":"p-na-after","request_id":"req-no-anchor","respondent":"borrower-na","stage":"after","form_version":"v1","score":70,"at":"2026-11-11"},
+
+    {"event_id":"p-cf-before","request_id":"req-conflict","respondent":"borrower-cf","stage":"before","form_version":"v1","score":40,"at":"2026-11-01"},
+    {"event_id":"p-cf-after","request_id":"req-conflict","respondent":"borrower-cf","stage":"after","form_version":"v1","score":70,"at":"2026-11-11"},
+
+    {"event_id":"p-lt-before","request_id":"req-late","respondent":"borrower-lt","stage":"before","form_version":"v1","score":40,"at":"2026-11-01"},
+    {"event_id":"p-lt-after","request_id":"req-late","respondent":"borrower-lt","stage":"after","form_version":"v1","score":70,"at":"2026-11-11"},
+    {"event_id":"p-sw-before","request_id":"req-switch","respondent":"borrower-sw","stage":"before","form_version":"v1","score":40,"at":"2026-11-01"},
+    {"event_id":"p-sw-after","request_id":"req-switch","respondent":"borrower-sw","stage":"after","form_version":"v1","score":70,"at":"2026-11-11"},
+
+    {"event_id":"p-sm-before","request_id":"req-scale-mismatch","respondent":"borrower-sm","stage":"before","form_version":"v1","score":40,"at":"2026-11-01"},
+    {"event_id":"p-sm-after","request_id":"req-scale-mismatch","respondent":"borrower-sm","stage":"after","form_version":"v1","score":70,"at":"2026-11-11"},
+    {"event_id":"p-wn-before","request_id":"req-window","respondent":"borrower-wn","stage":"before","form_version":"v1","score":40,"at":"2026-11-01"},
+    {"event_id":"p-wn-after","request_id":"req-window","respondent":"borrower-wn","stage":"after","form_version":"v1","score":70,"at":"2026-11-11"}
+  ],
+  "anchor_vignettes": [
+    {"event_id":"anchor-aw-1","request_id":"req-anchor-withdrawn","respondent":"borrower-aw","form_version":"v1","retrospective_before":65,"at":"2026-11-11","witness":"evaluator-a"},
+
+    {"event_id":"anchor-sb-1","request_id":"req-self-boundary","respondent":"borrower-sb","form_version":"v1","retrospective_before":40,"at":"2026-11-11","witness":"evaluator-a"},
+    {"event_id":"anchor-sl-1","request_id":"req-self-below","respondent":"borrower-sl","form_version":"v1","retrospective_before":40,"at":"2026-11-11","witness":"evaluator-a"},
+    {"event_id":"anchor-as-1","request_id":"req-anchor-straddle","respondent":"borrower-as","form_version":"v1","retrospective_before":65,"at":"2026-11-11","witness":"evaluator-a"},
+    {"event_id":"anchor-as-2","request_id":"req-anchor-straddle","respondent":"borrower-as","form_version":"v1","retrospective_before":58,"at":"2026-11-11","witness":"evaluator-a"},
+
+    {"event_id":"anchor-lt-1","request_id":"req-late","respondent":"borrower-lt","form_version":"v1","retrospective_before":65,"at":"2026-11-11","witness":"evaluator-a"},
+    {"event_id":"anchor-sw-1","request_id":"req-switch","respondent":"borrower-sw","form_version":"v1","retrospective_before":65,"at":"2026-11-11","witness":"evaluator-a"}
+  ],
+  "anchor_withdrawals": [
+    {"event_id":"withdraw-aw-1","request_id":"req-anchor-withdrawn","anchor_event_id":"anchor-aw-1","at":"2026-11-12","witness":"evaluator-a"}
+  ],
+  "walk_tests": [
+    {"event_id":"walk-wm-before","request_id":"req-walk-mismatch","stage":"before","meters":120,"minutes":6,"at":"2026-11-01","witness":"therapist-a","venue":"clinic-lane-1","assist":"none"},
+    {"event_id":"walk-wm-after","request_id":"req-walk-mismatch","stage":"after","meters":95,"minutes":3,"at":"2026-11-11","witness":"therapist-a","venue":"clinic-lane-1","assist":"none"},
+
+    {"event_id":"walk-wb-before","request_id":"req-walk-boundary","stage":"before","meters":120,"minutes":6,"at":"2026-11-01","witness":"therapist-a","venue":"clinic-lane-1","assist":"none"},
+    {"event_id":"walk-wb-after","request_id":"req-walk-boundary","stage":"after","meters":150,"minutes":6,"at":"2026-11-11","witness":"therapist-a","venue":"clinic-lane-1","assist":"none"},
+    {"event_id":"walk-wc-before","request_id":"req-walk-condition","stage":"before","meters":120,"minutes":6,"at":"2026-11-01","witness":"therapist-a","venue":"clinic-lane-1","assist":"none"},
+    {"event_id":"walk-wc-after","request_id":"req-walk-condition","stage":"after","meters":180,"minutes":6,"at":"2026-11-11","witness":"therapist-a","venue":"corridor-b","assist":"cane"},
+
+    {"event_id":"walk-cf-before","request_id":"req-conflict","stage":"before","meters":120,"minutes":6,"at":"2026-11-01","witness":"therapist-a","venue":"clinic-lane-1","assist":"none"},
+    {"event_id":"walk-cf-after","request_id":"req-conflict","stage":"after","meters":180,"minutes":6,"at":"2026-11-11","witness":"therapist-a","venue":"clinic-lane-1","assist":"none"},
+    {"event_id":"walk-sw-before","request_id":"req-switch","stage":"before","meters":120,"minutes":6,"at":"2026-11-01","witness":"therapist-a","venue":"clinic-lane-1","assist":"none"},
+    {"event_id":"walk-sw-after","request_id":"req-switch","stage":"after","meters":180,"minutes":6,"at":"2026-11-11","witness":"therapist-a","venue":"clinic-lane-1","assist":"none"}
+  ],
+  "abnormal_returns": [
+    {"event_id":"return-abnormal-1","request_id":"req-1","unit":"unit-1","at":"2026-11-12","person":"borrower-a","center":"borrower-a","condition":"broken-wheel","damage_cost":9500}
+  ]
+}
