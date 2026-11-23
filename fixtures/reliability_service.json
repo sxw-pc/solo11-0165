@@ -1,0 +1,24 @@
+{
+  "service_orders": [
+    {
+      "event_id": "service-tighten-08",
+      "order_id": "svc-2026-1108",
+      "unit": "unit-1",
+      "started_at": "2026-11-08T09:00:00",
+      "ended_at": "2026-11-08T16:00:00",
+      "action": "tighten",
+      "center_signed_by": "center-staff-a",
+      "manufacturer_signed_by": "maker-agent-m",
+      "manufacturer_receipt_at": "2026-11-08T10:30:00"
+    }
+  ],
+  "component_scans": [
+    {"event_id": "scan-tighten-08-remove-center", "order_id": "svc-2026-1108", "unit": "unit-1", "at": "2026-11-08T09:10:00", "phase": "removed", "party": "center", "serial": "W1", "signed_by": "center-staff-a"},
+    {"event_id": "scan-tighten-08-remove-maker", "order_id": "svc-2026-1108", "unit": "unit-1", "at": "2026-11-08T10:40:00", "phase": "removed", "party": "manufacturer", "serial": "W1", "signed_by": "maker-agent-m"},
+    {"event_id": "scan-tighten-08-install-center", "order_id": "svc-2026-1108", "unit": "unit-1", "at": "2026-11-08T15:00:00", "phase": "installed", "party": "center", "serial": "W1", "signed_by": "center-staff-a"},
+    {"event_id": "scan-tighten-08-install-maker", "order_id": "svc-2026-1108", "unit": "unit-1", "at": "2026-11-08T15:20:00", "phase": "installed", "party": "manufacturer", "serial": "W1", "signed_by": "maker-agent-m"}
+  ],
+  "reinspections": [
+    {"event_id": "reinspect-tighten-08", "order_id": "svc-2026-1108", "unit": "unit-1", "at": "2026-11-08T15:40:00", "state": "pass", "inspector": "technician-r"}
+  ]
+}

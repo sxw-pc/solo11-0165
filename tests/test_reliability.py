@@ -23,7 +23,13 @@ class ReliabilityTest(unittest.TestCase):
                 self.assertEqual((row['model'], row['units'], row['loan_days'], row['faults']),
                                  ('walker-m', 1, 9, 2))
                 run_import(db, 'fit-import', (ROOT / 'fixtures' / 'fit_bad.json').read_bytes())
-                self.assertEqual(report(db)['reliability'][0]['loan_days'], 0)
+                # A retroactive legal re-adjudication must not erase the nine
+                # days of witnessed physical use; the qualification is flagged
+                # separately for review.
+                row = report(db)['reliability'][0]
+                self.assertEqual(row['loan_days'], 9)
+                self.assertEqual(row['faults'], 2)
+                self.assertEqual(row['qualification'], 'review_required')
             finally:
                 db.close()
 

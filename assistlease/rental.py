@@ -2,6 +2,42 @@ from datetime import date
 from .source import record
 from .store import update
 
+
+def witnessed_loan_intervals(db):
+    """Physically witnessed delivery->return exposure intervals per unit.
+
+    Exposure is a fact about the physical asset: it is witnessed by an
+    independent center signature and ends at the actual return.  It does not
+    depend on rental_decision state, so a later legal re-adjudication (for
+    example a retroactively rejected fit opinion) cannot erase use that
+    already happened.  Intervals returned here can be unioned by day so that
+    same-day overlapping handovers are never counted twice.
+    """
+    intervals = []
+    units = [r[0] for r in db.execute('SELECT DISTINCT unit FROM delivery ORDER BY unit')]
+    for unit in units:
+        deliveries = [r for r in db.execute(
+            'SELECT * FROM delivery WHERE unit=? ORDER BY at,event_id', (unit,))
+            if r['center'] and r['center'] != r['person']]
+        returns = [r for r in db.execute(
+            'SELECT * FROM return_receipt WHERE unit=? ORDER BY at,event_id', (unit,))
+            if r['center'] and r['center'] != r['person']]
+        ri = 0
+        for delivery in deliveries:
+            while ri < len(returns) and returns[ri]['at'] < delivery['at']:
+                ri += 1
+            if ri < len(returns):
+                returned = returns[ri]
+                ri += 1
+                if returned['at'] >= delivery['at']:
+                    intervals.append({'unit': unit,
+                                      'started': delivery['at'][:10],
+                                      'ended': returned['at'][:10]})
+            # Loans still outstanding at extraction time are right-censored:
+            # no closed interval is appended for them.
+    return intervals
+
+
 def decide(db,request_id):
     fit=db.execute('SELECT * FROM fit_decision WHERE request_id=?',(request_id,)).fetchone()
     terms=db.execute('SELECT * FROM rental_term WHERE request_id=? ORDER BY event_id DESC',(request_id,)).fetchall()
