@@ -1,0 +1,35 @@
+{
+  "agreements": [
+    {
+      "event_id": "agreement-contam",
+      "route": "A",
+      "protocol_id": "proto-steam-full-batch",
+      "process_method": "steam",
+      "signed_by": "center-director-a",
+      "authorized_at": "2026-10-20",
+      "sampling_protocol": "ten walkers; internal witness joints; neutralization plus recovery spike; independent repeat culture",
+      "allowed_uses": "routine customer use",
+      "declared_surfaces": ["handle", "folding-joint"],
+      "external_surfaces": ["handle"],
+      "excluded_surfaces": [],
+      "disclosure": "full batch contact-surface acceptance"
+    }
+  ],
+  "batches": [
+    {"event_id": "batch-contam", "batch_id": "C-2026-10-29", "process_id": "sanitation-5", "agreement_id": "agreement-contam", "sampler": "tech-lin", "raw_file": "raw/C-2026-10-29.tsv", "raw_sha": "5555555555555555555555555555555555555555555555555555555555555555", "received_at": "2026-10-29T09:00:00", "units": ["unit-1"]}
+  ],
+  "coverage": [
+    {"event_id": "cov-c-handle", "process_id": "sanitation-5", "batch_id": "C-2026-10-29", "surface": "handle", "unit": "unit-1", "material": "steel", "occlusion": "external", "geometry": "bar", "technique": "steam", "coverage": "external-visible", "operator": "cleaner-a", "evidence_ref": "steam-log-c1", "raw_sha": "6666666666666666666666666666666666666666666666666666666666666666"},
+    {"event_id": "cov-c-joint", "process_id": "sanitation-5", "batch_id": "C-2026-10-29", "surface": "folding-joint", "unit": "unit-1", "material": "steel", "occlusion": "internal", "geometry": "hinge", "technique": "steam", "coverage": "internal", "witness_ref": "sample-c-joint-witness", "operator": "cleaner-a", "evidence_ref": "steam-log-c1", "raw_sha": "6666666666666666666666666666666666666666666666666666666666666666"}
+  ],
+  "controls": [
+    {"event_id": "ctl-c-untreated", "process_id": "sanitation-5", "batch_id": "C-2026-10-29", "kind": "untreated", "observed_cfu": 100, "result": "pass", "at": "2026-10-29T09:10:00"},
+    {"event_id": "ctl-c-blank", "process_id": "sanitation-5", "batch_id": "C-2026-10-29", "kind": "blank", "observed_cfu": 7, "result": "fail", "at": "2026-10-29T09:11:00"},
+    {"event_id": "ctl-c-recovery", "process_id": "sanitation-5", "batch_id": "C-2026-10-29", "kind": "recovery", "expected_cfu": 100, "observed_cfu": 90, "recovery_pct": 90, "result": "pass", "at": "2026-10-29T09:12:00"},
+    {"event_id": "ctl-c-neutralization", "process_id": "sanitation-5", "batch_id": "C-2026-10-29", "kind": "neutralization", "observed_cfu": 0, "result": "pass", "at": "2026-10-29T09:13:00"}
+  ],
+  "samples": [
+    {"event_id": "sample-c-handle", "process_id": "sanitation-5", "batch_id": "C-2026-10-29", "surface": "handle", "unit": "unit-1", "geometry": "bar", "material": "steel", "occlusion": "external", "role": "post", "cfu": 0, "at": "2026-10-29T09:20:00", "barcode": "SW-C-001", "sampler": "tech-lin", "culture_record": {"incubated_h": 48, "temp_c": 35}},
+    {"event_id": "sample-c-joint-witness", "process_id": "sanitation-5", "batch_id": "C-2026-10-29", "surface": "folding-joint", "unit": "unit-1", "geometry": "hinge", "material": "steel", "occlusion": "internal", "role": "witness", "cfu": 0, "at": "2026-10-29T09:22:00", "barcode": "SW-C-002", "sampler": "tech-lin", "culture_record": {"incubated_h": 48, "temp_c": 35}}
+  ]
+}

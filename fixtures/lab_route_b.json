@@ -1,0 +1,86 @@
+{
+  "agreements": [
+    {
+      "event_id": "agreement-b",
+      "route": "B",
+      "protocol_id": "proto-uv-external-demo",
+      "process_method": "uv",
+      "signed_by": "center-director-b",
+      "authorized_at": "2026-10-21",
+      "sampling_protocol": "re-aimed UV; external visible surfaces only; neutralization plus recovery spike; independent repeat culture",
+      "allowed_uses": "non-contact demonstration only",
+      "declared_surfaces": ["handle", "brake-lever"],
+      "external_surfaces": ["handle", "brake-lever"],
+      "excluded_surfaces": ["folding-joint"],
+      "disclosure": "external visible surfaces only; joints remain unverified"
+    }
+  ],
+  "batches": [
+    {
+      "event_id": "batch-b1",
+      "batch_id": "B-2026-10-26",
+      "process_id": "sanitation-2",
+      "agreement_id": "agreement-b",
+      "sampler": "tech-ma",
+      "raw_file": "raw/B-2026-10-26.tsv",
+      "raw_sha": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "received_at": "2026-10-26T09:00:00",
+      "units": ["unit-1"]
+    }
+  ],
+  "runs": [
+    {
+      "event_id": "run-b1",
+      "process_id": "sanitation-2",
+      "batch_id": "B-2026-10-26",
+      "method": "uv",
+      "started_at": "2026-10-26T08:00:00",
+      "ended_at": "2026-10-26T08:20:00",
+      "operator": "cleaner-b",
+      "log_sha": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "agreement_id": "agreement-b"
+    }
+  ],
+  "coverage": [
+    {
+      "event_id": "cov-b-handle",
+      "process_id": "sanitation-2",
+      "batch_id": "B-2026-10-26",
+      "surface": "handle",
+      "unit": "unit-1",
+      "material": "steel",
+      "occlusion": "external",
+      "geometry": "bar",
+      "technique": "uv",
+      "coverage": "external-visible",
+      "operator": "cleaner-b",
+      "evidence_ref": "uv-image-b1-handle",
+      "raw_sha": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "event_id": "cov-b-brake",
+      "process_id": "sanitation-2",
+      "batch_id": "B-2026-10-26",
+      "surface": "brake-lever",
+      "unit": "unit-1",
+      "material": "polymer",
+      "occlusion": "external",
+      "geometry": "lever",
+      "technique": "uv",
+      "coverage": "external-visible",
+      "operator": "cleaner-b",
+      "evidence_ref": "uv-image-b1-brake",
+      "raw_sha": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    }
+  ],
+  "controls": [
+    {"event_id": "ctl-b-untreated", "process_id": "sanitation-2", "batch_id": "B-2026-10-26", "kind": "untreated", "observed_cfu": 95, "result": "pass", "at": "2026-10-26T09:10:00"},
+    {"event_id": "ctl-b-blank", "process_id": "sanitation-2", "batch_id": "B-2026-10-26", "kind": "blank", "observed_cfu": 0, "result": "pass", "at": "2026-10-26T09:11:00"},
+    {"event_id": "ctl-b-recovery", "process_id": "sanitation-2", "batch_id": "B-2026-10-26", "kind": "recovery", "expected_cfu": 100, "observed_cfu": 80, "recovery_pct": 80, "result": "pass", "at": "2026-10-26T09:12:00"},
+    {"event_id": "ctl-b-neutralization", "process_id": "sanitation-2", "batch_id": "B-2026-10-26", "kind": "neutralization", "observed_cfu": 0, "result": "pass", "at": "2026-10-26T09:13:00"}
+  ],
+  "samples": [
+    {"event_id": "sample-b-handle", "process_id": "sanitation-2", "batch_id": "B-2026-10-26", "surface": "handle", "unit": "unit-1", "geometry": "bar", "material": "steel", "occlusion": "external", "role": "post", "cfu": 0, "at": "2026-10-26T09:20:00", "barcode": "SW-B-001", "sampler": "tech-ma", "culture_record": {"incubated_h": 48, "temp_c": 35, "repeat": 1}},
+    {"event_id": "sample-b-brake", "process_id": "sanitation-2", "batch_id": "B-2026-10-26", "surface": "brake-lever", "unit": "unit-1", "geometry": "lever", "material": "polymer", "occlusion": "external", "role": "post", "cfu": 0, "at": "2026-10-26T09:21:00", "barcode": "SW-B-002", "sampler": "tech-ma", "culture_record": {"incubated_h": 48, "temp_c": 35, "repeat": 1}}
+  ]
+}

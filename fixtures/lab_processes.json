@@ -1,0 +1,9 @@
+{
+  "sanitations": [
+    {"event_id": "sanitation-2", "unit": "unit-1", "at": "2026-10-26", "valid_to": "2026-10-30", "operator": "cleaner-b", "method": "uv"},
+    {"event_id": "sanitation-3", "unit": "unit-1", "at": "2026-10-27", "valid_to": "2026-10-31", "operator": "cleaner-z", "method": "steam"},
+    {"event_id": "sanitation-4", "unit": "unit-1", "at": "2026-10-28", "valid_to": "2026-11-01", "operator": "cleaner-a", "method": "steam"},
+    {"event_id": "sanitation-5", "unit": "unit-1", "at": "2026-10-29", "valid_to": "2026-11-02", "operator": "cleaner-a", "method": "steam"},
+    {"event_id": "sanitation-6", "unit": "unit-1", "at": "2026-10-30", "valid_to": "2026-11-03", "operator": "cleaner-b", "method": "uv"}
+  ]
+}
