@@ -31,7 +31,10 @@ def decide(db,unit):
     return result
 
 def reconcile_all(db):
-    return [decide(db,r[0]) for r in db.execute('SELECT DISTINCT unit FROM asset_unit ORDER BY unit').fetchall()]
+    results=[decide(db,r[0]) for r in db.execute('SELECT DISTINCT unit FROM asset_unit ORDER BY unit').fetchall()]
+    from .settlement import reconcile_all as settle_all
+    settle_all(db)
+    return results
 
 def import_data(db,data):
     touched=set()
@@ -52,4 +55,7 @@ def import_data(db,data):
             if record(db,row['event_id'],'reservation',row):
                 db.execute('INSERT INTO reservation VALUES(?,?,?,?,?)',(row['event_id'],row['request_id'],row['unit'],row['from_at'],row['to_at']))
             touched.add(row['unit'])
-        return [decide(db,u) for u in sorted(touched)]
+        results=[decide(db,u) for u in sorted(touched)]
+        from .settlement import reconcile_all as settle_all
+        settle_all(db)
+        return results

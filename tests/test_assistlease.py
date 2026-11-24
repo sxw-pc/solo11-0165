@@ -90,4 +90,158 @@ class LeaseCase(unittest.TestCase):
         out=subprocess.run([sys.executable,'-m','assistlease','demo','--db',str(path)],cwd=ROOT,text=True,capture_output=True,check=True)
         self.assertEqual(json.loads(out.stdout)['requests'][0]['rental']['state'],'closed')
 
+class SettlementCase(unittest.TestCase):
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory();self.db=connect(Path(self.tmp.name)/'state.sqlite')
+    def tearDown(self):self.db.close();self.tmp.cleanup()
+    def lease_base(self):
+        for kind,name in [('fit-import','fit_ok.json'),('asset-import','asset_ok.json'),('rental-import','rental_ok.json'),
+                          ('fit-import','settlement_fit2.json'),('asset-import','settlement_asset2.json'),
+                          ('rental-import','settlement_rental2.json'),('settlement-import','settlement_auth.json')]:
+            feed(self.db,kind,fixture(name))
+    def route_a(self):
+        self.lease_base()
+        for name in ['settlement_pay_refund.json','settlement_receipt_success.json','settlement_receipt_return.json']:
+            feed(self.db,'settlement-import',fixture(name))
+    def route_b(self):
+        self.lease_base()
+        for name in ['settlement_pay_offset.json','settlement_receipt_offset.json']:
+            feed(self.db,'settlement-import',fixture(name))
+    def settle_of(self,req):
+        return dict(self.db.execute('SELECT * FROM settlement_decision WHERE request_id=?',(req,)).fetchone())
+    def flow(self,flow_id):
+        return next(f for f in report(self.db)['flows'] if f['flow_id']==flow_id)
+    def test_aggregate_success_and_return_attribute_by_instruction_not_amount(self):
+        self.route_a()
+        first,second=self.settle_of('req-1'),self.settle_of('req-2')
+        self.assertEqual((first['state'],first['due'],first['paid'],first['pending'],first['returned']),('settled',9700,9700,0,0))
+        self.assertEqual((second['state'],second['due'],second['paid'],second['pending'],second['returned']),('pending',300,0,300,300))
+        flow=self.flow('flow-1')
+        self.assertEqual(flow['attributed'],[{'request_id':'req-1','amount':9700}])
+        self.assertLessEqual(sum(a['amount'] for a in flow['attributed']),flow['posted'])
+        self.assertEqual(flow['unallocated'],0)
+        feed(self.db,'settlement-import',fixture('settlement_pay_retry.json'))
+        feed(self.db,'settlement-import',fixture('settlement_receipt_retry.json'))
+        first,second=self.settle_of('req-1'),self.settle_of('req-2')
+        self.assertEqual((second['state'],second['paid'],second['pending']),('settled',300,0))
+        self.assertEqual(first['paid']+second['paid'],10000)
+        self.assertEqual(self.flow('flow-3')['attributed'],[{'request_id':'req-2','amount':300}])
+        self.assertEqual(audit(self.db)['status'],'matched')
+    def test_offset_route_credit_then_cancel_restores_pending(self):
+        self.route_b()
+        first,second=self.settle_of('req-1'),self.settle_of('req-2')
+        self.assertEqual((first['state'],first['paid']),('settled',9700))
+        self.assertEqual((second['state'],second['offset_credit'],second['paid'],second['pending']),('offset',300,0,0))
+        feed(self.db,'settlement-import',fixture('settlement_cancel.json'))
+        second=self.settle_of('req-2')
+        self.assertEqual((second['state'],second['offset_credit'],second['paid'],second['pending']),('pending',0,0,300))
+        history=[r[0] for r in self.db.execute("SELECT state FROM decision_history WHERE subsystem='settlement_decision' AND object_id='req-2' ORDER BY id")]
+        self.assertEqual(history[-2:],['offset','pending'])
+        self.assertEqual(audit(self.db)['status'],'matched')
+    def test_interleaved_receipt_arrival_same_clearing(self):
+        self.route_a()
+        expected=(report(self.db)['settlements'],report(self.db)['flows'],report(self.db)['suspense'])
+        tmp2=tempfile.TemporaryDirectory();db2=connect(Path(tmp2.name)/'state.sqlite')
+        try:
+            for kind,name in [('fit-import','fit_ok.json'),('asset-import','asset_ok.json'),('rental-import','rental_ok.json'),
+                              ('fit-import','settlement_fit2.json'),('asset-import','settlement_asset2.json'),
+                              ('rental-import','settlement_rental2.json'),('settlement-import','settlement_auth.json'),
+                              ('settlement-import','settlement_receipt_return.json'),('settlement-import','settlement_receipt_success.json'),
+                              ('settlement-import','settlement_pay_refund.json')]:
+                feed(db2,kind,fixture(name))
+            actual=(report(db2)['settlements'],report(db2)['flows'],report(db2)['suspense'])
+            self.assertEqual(actual,expected)
+            self.assertEqual(audit(db2)['status'],'matched')
+        finally:db2.close();tmp2.cleanup()
+    def test_receipt_before_instruction_held_in_suspense(self):
+        self.lease_base()
+        feed(self.db,'settlement-import',fixture('settlement_receipt_success.json'))
+        self.assertEqual([r['flow_id'] for r in report(self.db)['suspense']],['flow-1'])
+        self.assertEqual(self.settle_of('req-1')['paid'],0)
+        feed(self.db,'settlement-import',fixture('settlement_pay_refund.json'))
+        self.assertEqual(report(self.db)['suspense'],[])
+        self.assertEqual(self.settle_of('req-1')['paid'],9700)
+    def test_late_dispute_recovers_paid_and_blocks_unsent(self):
+        self.route_a()
+        feed(self.db,'rental-import',fixture('settlement_dispute.json'))
+        first=self.settle_of('req-1')
+        self.assertEqual((first['state'],first['due'],first['paid'],first['recover'],first['frozen']),('disputed',0,9700,9700,10000))
+        self.assertEqual(self.settle_of('req-2')['pending'],300)
+        self.assertEqual(audit(self.db)['status'],'matched')
+        tmp2=tempfile.TemporaryDirectory();db2=connect(Path(tmp2.name)/'state.sqlite')
+        try:
+            for kind,name in [('fit-import','fit_ok.json'),('asset-import','asset_ok.json'),('rental-import','rental_ok.json'),
+                              ('settlement-import','settlement_auth.json'),('settlement-import','settlement_pay_refund.json')]:
+                feed(db2,kind,fixture(name))
+            feed(db2,'rental-import',fixture('settlement_dispute.json'))
+            row=dict(db2.execute('SELECT * FROM settlement_decision WHERE request_id=?',('req-1',)).fetchone())
+            self.assertEqual((row['state'],row['paid'],row['pending'],row['recover']),('disputed',0,0,0))
+            self.assertIn('blocked',row['reason'])
+        finally:db2.close();tmp2.cleanup()
+    def test_conflicting_routes_blocked(self):
+        self.lease_base()
+        feed(self.db,'settlement-import',{'payments':[
+            {'event_id':'pay-c1','batch_id':'batch-9','request_id':'req-2','amount':300,'route':'refund','account':'acct-a'},
+            {'event_id':'pay-c2','batch_id':'batch-9','request_id':'req-2','amount':300,'route':'offset'}]})
+        second=self.settle_of('req-2')
+        self.assertEqual(second['state'],'blocked')
+        self.assertIn('conflict',second['reason'])
+        self.assertEqual((second['offset_credit'],second['paid'],second['pending']),(0,0,300))
+    def test_unauthorized_account_blocks_instruction_and_receipt(self):
+        self.lease_base()
+        feed(self.db,'settlement-import',{'payments':[{'event_id':'pay-x','batch_id':'batch-x','request_id':'req-1','amount':9700,'route':'refund','account':'acct-evil'}]})
+        self.assertEqual(self.settle_of('req-1')['state'],'blocked')
+        feed(self.db,'settlement-import',{'receipts':[{'event_id':'rcpt-x','flow_id':'flow-x','batch_id':'batch-x','kind':'success','amount':9700,'at':'2026-11-15'}]})
+        self.assertEqual(self.settle_of('req-1')['paid'],0)
+        self.assertEqual(self.flow('flow-x')['unallocated'],9700)
+    def test_duplicate_bank_flow_not_double_counted(self):
+        self.route_a()
+        feed(self.db,'settlement-import',fixture('settlement_receipt_success.json'))
+        self.assertEqual(self.settle_of('req-1')['paid'],9700)
+        dup=fixture('settlement_receipt_success.json');dup['receipts'][0]['event_id']='rcpt-1-dup'
+        feed(self.db,'settlement-import',dup)
+        self.assertEqual(self.settle_of('req-1')['paid'],9700)
+        dup['receipts'][0]['amount']=500
+        with self.assertRaisesRegex(ValueError,'bank flow conflict'):feed(self.db,'settlement-import',dup)
+    def test_settlement_event_id_replay_and_conflict(self):
+        self.lease_base()
+        data=fixture('settlement_pay_refund.json');feed(self.db,'settlement-import',data);feed(self.db,'settlement-import',data)
+        self.assertEqual(self.db.execute('SELECT COUNT(*) FROM payment_instruction').fetchone()[0],2)
+        data['payments'][0]['amount']=9701
+        with self.assertRaisesRegex(ValueError,'event_id conflict'):feed(self.db,'settlement-import',data)
+    def test_reversal_unwinds_posted_payment(self):
+        self.route_a()
+        feed(self.db,'settlement-import',{'receipts':[{'event_id':'rcpt-9','flow_id':'flow-9','batch_id':'batch-1','kind':'reversal','amount':9700,'original_flow_id':'flow-1','at':'2026-11-17'}]})
+        first=self.settle_of('req-1')
+        self.assertEqual((first['state'],first['paid'],first['pending']),('pending',0,9700))
+        self.assertEqual(self.flow('flow-1')['effective'],0)
+        self.assertEqual(audit(self.db)['status'],'matched')
+    def test_import_order_does_not_change_clearing(self):
+        self.route_a()
+        feed(self.db,'settlement-import',fixture('settlement_pay_retry.json'))
+        feed(self.db,'settlement-import',fixture('settlement_receipt_retry.json'))
+        expected=(report(self.db)['settlements'],report(self.db)['flows'],report(self.db)['suspense'])
+        tmp2=tempfile.TemporaryDirectory();db2=connect(Path(tmp2.name)/'state.sqlite')
+        try:
+            for kind,name in [('settlement-import','settlement_auth.json'),('settlement-import','settlement_pay_refund.json'),
+                              ('settlement-import','settlement_receipt_return.json'),('settlement-import','settlement_receipt_success.json'),
+                              ('settlement-import','settlement_pay_retry.json'),('settlement-import','settlement_receipt_retry.json'),
+                              ('rental-import','settlement_rental2.json'),('asset-import','settlement_asset2.json'),
+                              ('fit-import','settlement_fit2.json'),('rental-import','rental_ok.json'),
+                              ('asset-import','asset_ok.json'),('fit-import','fit_ok.json')]:
+                feed(db2,kind,fixture(name))
+            actual=(report(db2)['settlements'],report(db2)['flows'],report(db2)['suspense'])
+            self.assertEqual(actual,expected)
+            self.assertEqual(audit(db2)['status'],'matched')
+        finally:db2.close();tmp2.cleanup()
+    def test_cli_settlement_demo(self):
+        path=Path(self.tmp.name)/'demo.sqlite'
+        out=subprocess.run([sys.executable,'-m','assistlease','demo','--db',str(path)],cwd=ROOT,text=True,capture_output=True,check=True)
+        data=json.loads(out.stdout)
+        settled={r['request_id']:r for r in data['settlements']}
+        self.assertEqual((settled['req-1']['state'],settled['req-1']['paid']),('settled',9700))
+        self.assertEqual((settled['req-2']['state'],settled['req-2']['paid']),('settled',300))
+        out=subprocess.run([sys.executable,'-m','assistlease','audit','--db',str(path)],cwd=ROOT,text=True,capture_output=True,check=True)
+        self.assertEqual(json.loads(out.stdout)['status'],'matched')
+
 if __name__=='__main__':unittest.main()

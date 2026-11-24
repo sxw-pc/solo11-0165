@@ -16,6 +16,12 @@ CREATE TABLE IF NOT EXISTS delivery(event_id TEXT PRIMARY KEY,request_id TEXT NO
 CREATE TABLE IF NOT EXISTS return_receipt(event_id TEXT PRIMARY KEY,request_id TEXT NOT NULL,unit TEXT NOT NULL,at TEXT NOT NULL,person TEXT NOT NULL,center TEXT NOT NULL,condition TEXT NOT NULL,damage_cost INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS rental_decision(request_id TEXT PRIMARY KEY,state TEXT NOT NULL,reason TEXT NOT NULL,started_at TEXT,overdue_fee INTEGER NOT NULL,damage_fee INTEGER NOT NULL,refund INTEGER NOT NULL,frozen INTEGER NOT NULL,version INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS decision_history(id INTEGER PRIMARY KEY,subsystem TEXT NOT NULL,object_id TEXT NOT NULL,version INTEGER NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL,at TEXT DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE IF NOT EXISTS refund_account(event_id TEXT PRIMARY KEY,person TEXT NOT NULL,account TEXT NOT NULL,authorized_by TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS offset_auth(event_id TEXT PRIMARY KEY,request_id TEXT NOT NULL,to_request TEXT NOT NULL,person TEXT NOT NULL,amount INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS payment_instruction(event_id TEXT PRIMARY KEY,batch_id TEXT NOT NULL,request_id TEXT NOT NULL,amount INTEGER NOT NULL,route TEXT NOT NULL,account TEXT);
+CREATE TABLE IF NOT EXISTS bank_receipt(event_id TEXT PRIMARY KEY,flow_id TEXT NOT NULL,batch_id TEXT NOT NULL,kind TEXT NOT NULL,amount INTEGER NOT NULL,request_id TEXT,original_flow_id TEXT,at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS rental_cancel(event_id TEXT PRIMARY KEY,request_id TEXT NOT NULL,at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS settlement_decision(request_id TEXT PRIMARY KEY,state TEXT NOT NULL,reason TEXT NOT NULL,due INTEGER NOT NULL,paid INTEGER NOT NULL,pending INTEGER NOT NULL,returned INTEGER NOT NULL,frozen INTEGER NOT NULL,offset_credit INTEGER NOT NULL,recover INTEGER NOT NULL,version INTEGER NOT NULL);
 """
 def connect(path):
     db=sqlite3.connect(path);db.row_factory=sqlite3.Row;db.executescript(SCHEMA);return db
